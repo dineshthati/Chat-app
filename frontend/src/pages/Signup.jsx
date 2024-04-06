@@ -1,27 +1,29 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import useSignup from "../hooks/useSignup";
+import { toast } from "react-hot-toast";
 
 const Signup = () => {
+  const { loading, signup } = useSignup();
   const [inputs, setInputs] = useState({
     fullName: "",
     username: "",
     password: "",
-    confirmpassword: "",
+    confirmPassword: "",
     gender: "",
   });
 
-  let handlesubmit = (e) => {
+  let handlesubmit = async (e) => {
     e.preventDefault();
     console.log(inputs);
+    await signup(inputs);
+    toast.success("Signup succesfull");
   };
 
   return (
     <div className=" w-full h-full flex items-center justify-center flex-col gap-5">
       <h1 className="text-5xl uppercase">Sign Up</h1>
-      <form
-        action="
-      "
-      >
+      <div className="flex flex-col gap-2 w-full items-center justify-center">
         <div className="">
           <label htmlFor="FullNmae">Full Name</label>
           <input
@@ -68,9 +70,9 @@ const Signup = () => {
           <label htmlFor="confirmpassword">Confirm password</label>
           <input
             id="confirmpassword"
-            value={inputs.confirmpassword}
+            value={inputs.confirmPassword}
             onChange={(e) => {
-              setInputs({ ...inputs, confirmpassword: e.target.value });
+              setInputs({ ...inputs, confirmPassword: e.target.value });
             }}
             type="password"
             className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
@@ -84,6 +86,8 @@ const Signup = () => {
               Male
             </label>
             <input
+              className="dark:border-white-400/20 dark:scale-100 transition-all duration-500 ease-in-out dark:hover:scale-110 dark:checked:scale-100 w-4 h-4"
+              checked={inputs.gender == "male"}
               id="male"
               type="checkbox"
               name="male"
@@ -98,6 +102,8 @@ const Signup = () => {
               Female
             </label>
             <input
+              className="dark:border-white-400/20 dark:scale-100 transition-all duration-500 ease-in-out dark:hover:scale-110 dark:checked:scale-100 w-4 h-4"
+              checked={inputs.gender == "female"}
               value={inputs.username}
               onChange={(e) => {
                 setInputs({ ...inputs, gender: "female" });
@@ -108,15 +114,17 @@ const Signup = () => {
             />
           </div>
         </div>
-        <Link to={"/login"}>Already a user? Login</Link>
-        <button
-          type="submit"
-          onClick={(e) => handlesubmit(e)}
-          className="bg-white w-24 h-9 rounded-md shadow-sm text-black"
-        >
-          Submit
-        </button>
-      </form>
+        <div className="flex flex-col">
+          <Link to={"/login"}>Already a user? Login</Link>
+          <button
+            type="submit"
+            onClick={(e) => handlesubmit(e)}
+            className="bg-white w-24 h-9 rounded-md shadow-sm text-black"
+          >
+            Submit
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
