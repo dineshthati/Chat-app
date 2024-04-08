@@ -1,24 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
 import dataReducer from "./Slices/dataSlice.js";
-import { persistReducer, persistStore } from "redux-persist";
-import storage from "redux-persist/lib/storage";
 import userReducer from "./Slices/Conversations.js";
 import socketReducer from "./Slices/socketSlice.js";
 import onlineUserReducer from "./Slices/onlineUsers.js";
-const persistConfig = {
-  key: "root",
-  storage,
-};
-
-const persistedReducer = persistReducer(persistConfig, dataReducer);
+import messageReducer from "./Slices/messageSlice.js";
 
 export const store = configureStore({
   reducer: {
-    data: persistedReducer,
+    data: dataReducer,
     user: userReducer,
     socket: socketReducer,
     onlineUser: onlineUserReducer,
+    message: messageReducer,
   },
 });
-
-export const persistor = persistStore(store);

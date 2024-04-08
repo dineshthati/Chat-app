@@ -3,14 +3,14 @@ import { createSlice } from "@reduxjs/toolkit";
 const onlineUser = createSlice({
   name: "OnlineUsers",
   initialState: {
-    onlineUsers: null,
+    onlineUsers: [],
   },
   reducers: {
-    setOnlineUser: (state, action) => {
+    setOnlineUsers: (state, action) => {
       state.onlineUsers = action.payload;
     },
   },
 });
 
-export const { setOnlineUser } = onlineUser.actions;
+export const { setOnlineUsers } = onlineUser.actions;
 export default onlineUser.reducer;

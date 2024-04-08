@@ -1,5 +1,7 @@
 import Coversation from "../models/conversationSchema.js";
 import Message from "../models/messageModel.js";
+import { io } from "../socket/socket.js";
+import { getReceiverSocketId } from "../socket/socket.js";
 
 export const messageController = async (req, res) => {
   console.log("sending message");
@@ -28,6 +30,13 @@ export const messageController = async (req, res) => {
       await conversation.save();
       await newMessage.save();
     }
+
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    console.log(receiverSocketId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
+
     return res.json({ newMessage, conversation });
   } catch (error) {
     console.log("An eroor in the controller");

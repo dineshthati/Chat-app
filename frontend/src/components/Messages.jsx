@@ -1,14 +1,18 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import getMessages from "../hooks/getMessages";
+import useGetRealTimeMessage from "../hooks/useGetRealTimeMessages";
 const Messages = () => {
   const user = useSelector((state) => state.user.value);
-  const { messages, fetchMessages } = getMessages(user);
-  useEffect(() => {
-    if (user) {
-      fetchMessages(user._id);
-    }
-  }, [user, fetchMessages]);
+  // const { messages, fetchMessages } = getMessages(user);
+  const { messages } = useSelector((store) => store.message);
+  useGetRealTimeMessage();
+  console.log(messages);
+  // useEffect(() => {
+  //   if (user) {
+  //     fetchMessages(user._id);
+  //   }
+  // }, [user, fetchMessages]);
   return (
     <div>
       {Array.isArray(messages) && messages.length > 0 ? (
