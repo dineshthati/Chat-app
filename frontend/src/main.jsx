@@ -7,12 +7,15 @@ import { BrowserRouter } from "react-router-dom";
 
 import { store } from "./redux/store.js";
 import { Provider } from "react-redux";
+// import { SocketContextProvider } from "./context/SocketContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
       <Provider store={store}>
+        {/* <SocketContextProvider> */}
         <App />
+        {/* </SocketContextProvider> */}
       </Provider>
     </BrowserRouter>
   </React.StrictMode>

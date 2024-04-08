@@ -8,9 +8,7 @@ export const getUsers = async (req, res) => {
       _id: { $ne: loggedInUser },
     }).select("-password");
 
-    res.status(200).json({
-      filteredUsers,
-    });
+    res.status(200).json(filteredUsers);
   } catch (error) {
     console.log("error in getmessages controller", error.message);
   }

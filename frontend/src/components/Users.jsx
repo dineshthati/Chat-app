@@ -1,14 +1,38 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setUsers } from "../redux/Slices/Conversations";
+import getMessages from "../hooks/getMessages";
 
-const Users = () => {
+const Users = ({ users }) => {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.value);
+  const { fetchMessages } = getMessages(user);
+
+  const handlesubmit = async (item) => {
+    dispatch(setUsers(item));
+    await fetchMessages(item._id);
+  };
+
   return (
-    <div className="flex items-center gap-5">
-      <img
-        className="w-8 h-8 rounded-full"
-        src="https://images.pexels.com/photos/20755698/pexels-photo-20755698/free-photo-of-a-woman-and-child-standing-on-the-beach.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-        alt=""
-      />
-      <p>User1</p>
+    <div className="flex flex-col gap-3 ">
+      {Array.isArray(users) && users.length > 0 ? (
+        users.map((item, index) => (
+          <div
+            className="flex items-center gap-5"
+            key={index}
+            onClick={() => handlesubmit(item)}
+          >
+            <img
+              className="w-8 h-8 rounded-full"
+              src={item.profilePhotoUrl}
+              alt=""
+            />
+            <p>{item.fullName}</p>
+          </div>
+        ))
+      ) : (
+        <p>No users found.</p>
+      )}
     </div>
   );
 };

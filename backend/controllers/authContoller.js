@@ -39,6 +39,7 @@ export const signup = async (req, res) => {
     generateTokenAndSetCookie(newUser, res);
     res.json({
       newUser: {
+        id: newUser._id,
         fullName: newUser.fullName,
         username: newUser.username,
         gender: newUser.gender,
@@ -73,6 +74,13 @@ export const signin = async (req, res) => {
 
     if (user.password == hashedPassword) {
       return res.json({
+        newUser: {
+          id: user._id,
+          fullName: user.fullName,
+          username: user.username,
+          gender: user.gender,
+          profilePhotoUrl: user.profilePhotoUrl,
+        },
         msg: "Login Success",
       });
     } else {

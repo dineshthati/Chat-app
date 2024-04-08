@@ -35,10 +35,26 @@ export const messageController = async (req, res) => {
 };
 
 export const getMessages = async (req, res) => {
-  const { id: userToChat } = req.params;
-  const senderId = req.user._id;
-  const conversation = await Coversation.findOne({
-    participants: { $all: [senderId, userToChat] },
-  }).populate("messages");
-  return res.json(conversation.messages);
+  try {
+    const { id: userToChat } = req.params;
+    const senderId = req.user._id;
+    const conversation = await Coversation.findOne({
+      participants: { $all: [senderId, userToChat] },
+    }).populate("messages");
+
+    if (
+      conversation &&
+      conversation.messages &&
+      conversation.messages.length > 0
+    ) {
+      return res.json(conversation.messages);
+    } else {
+      return res.json({ message: "No messages found" });
+    }
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ error: "An error occurred while fetching messages" });
+  }
 };
