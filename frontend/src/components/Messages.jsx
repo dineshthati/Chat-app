@@ -6,8 +6,9 @@ import useGetRealTimeMessage from "../hooks/useGetRealTimeMessages";
 import notificationSound from "../assets/frontend_src_assets_sounds_notification.mp3";
 
 const Messages = ({ messages, messageSenderId }) => {
-  const user = useSelector((state) => state.user.value);
+  const [hasMounted, setHasMounted] = useState(false);
 
+  const user = useSelector((state) => state.user.value);
   const data = useSelector((state) => state.data.value);
   const isSender = data?.newUser?.id === messageSenderId;
 
@@ -15,14 +16,15 @@ const Messages = ({ messages, messageSenderId }) => {
 
   useEffect(() => {
     scroll.current?.scrollIntoView({ behavior: "smooth" });
+    setHasMounted(true);
   }, [messages]);
 
   useEffect(() => {
-    if (!isSender) {
+    if (hasMounted && !isSender) {
       const audio = new Audio(notificationSound);
       audio.play();
     }
-  }, [messages]);
+  }, [messages, hasMounted]);
 
   return (
     <div>

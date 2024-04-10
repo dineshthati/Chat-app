@@ -19,7 +19,7 @@ const App = () => {
 
   useEffect(() => {
     if (data) {
-      const socketio = io(`http://localhost:8000/`, {
+      const socketio = io(`https://mern-chat-uu6r.onrender.com/`, {
         query: {
           userId: data?.newUser?.id,
         },
