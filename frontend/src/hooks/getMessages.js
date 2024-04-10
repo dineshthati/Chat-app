@@ -1,20 +1,23 @@
-// getMessages.js
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setMessages } from "../redux/Slices/messageSlice";
 
-const getMessages = (user) => {
-  const [messages, setMessages] = useState([]);
+const getMessages = () => {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.value);
 
-  const fetchMessages = useCallback(async (id) => {
-    try {
-      const res = await fetch(`/api/messages/${id}`);
-      const data = await res.json();
-      setMessages(data);
-    } catch (error) {
-      console.error("Error fetching messages:", error);
-    }
-  }, []);
-
-  return { messages, fetchMessages };
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const res = await fetch(`/api/messages/${user?._id}`);
+        const data = await res.json();
+        dispatch(setMessages(data));
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
+    fetchMessages();
+  }, [user?._id, setMessages]);
 };
 
 export default getMessages;

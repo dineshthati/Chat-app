@@ -5,17 +5,17 @@ import "./index.css";
 
 import { BrowserRouter } from "react-router-dom";
 
-import { store } from "./redux/store.js";
 import { Provider } from "react-redux";
-// import { SocketContextProvider } from "./context/SocketContext.jsx";
+import { PersistGate } from "redux-persist/integration/react";
+import { store, persistor } from "./redux/store.js";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
       <Provider store={store}>
-        {/* <SocketContextProvider> */}
-        <App />
-        {/* </SocketContextProvider> */}
+        <PersistGate loading={null} persistor={persistor}>
+          <App />
+        </PersistGate>
       </Provider>
     </BrowserRouter>
   </React.StrictMode>

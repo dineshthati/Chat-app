@@ -15,9 +15,7 @@ const Signup = () => {
 
   let handlesubmit = async (e) => {
     e.preventDefault();
-    console.log(inputs);
     await signup(inputs);
-    toast.success("Signup succesfull");
   };
 
   return (

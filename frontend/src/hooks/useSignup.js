@@ -26,7 +26,6 @@ const useSignup = () => {
     if (!success) return;
     setLoading(true);
     try {
-      console.log("signup success");
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -39,11 +38,11 @@ const useSignup = () => {
         }),
       });
       const data = await res.json();
-      console.log(data);
-      // Storing the data in localStorage
+      if (data?.msg) {
+        return toast.error(data.msg);
+      }
       localStorage.setItem("chat-user", JSON.stringify(data));
 
-      // Retrieving the data from localStorage
       const retrivedUser = JSON.parse(localStorage.getItem("chat-user"));
 
       dispatch(setData(retrivedUser));
@@ -79,5 +78,9 @@ const inputValidation = ({
     return false;
   }
 
+  if (password.length < 6) {
+    toast.error("Password must be at least 6 characters long");
+    return false;
+  }
   return true;
 };

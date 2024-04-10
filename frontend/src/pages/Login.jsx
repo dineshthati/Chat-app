@@ -9,12 +9,12 @@ const Login = () => {
   const dispatch = useDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  // const { data } = useSelector((state) => state);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log(username);
-    console.log(password);
+    if (password.length < 6) {
+      return toast.error("Password must be 6 letters");
+    }
     try {
       const res = await fetch(`/api/auth/login`, {
         method: "POST",
@@ -29,7 +29,6 @@ const Login = () => {
       toast.success(data.msg);
       localStorage.setItem("chat-user", JSON.stringify(data));
 
-      // Retrieving the data from localStorage
       const retrivedUser = JSON.parse(localStorage.getItem("chat-user"));
 
       dispatch(setData(retrivedUser));
@@ -39,7 +38,6 @@ const Login = () => {
       }
     } catch (error) {
       console.log(error);
-      // console.log(await res.text());
     }
   };
 
@@ -62,7 +60,7 @@ const Login = () => {
       <div className="">
         <label htmlFor="password">Password</label>
         <input
-          type="text"
+          type="password"
           className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
           name="password"
           placeholder="Password"

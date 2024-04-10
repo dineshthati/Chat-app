@@ -34,9 +34,10 @@ export const messageController = async (req, res) => {
     const receiverSocketId = getReceiverSocketId(receiverId);
     console.log(receiverSocketId);
     if (receiverSocketId) {
+      console.log(newMessage.message);
       io.to(receiverSocketId).emit("newMessage", newMessage);
     }
-
+    console.log("A message sent");
     return res.json({ newMessage, conversation });
   } catch (error) {
     console.log("An eroor in the controller");
@@ -58,7 +59,7 @@ export const getMessages = async (req, res) => {
     ) {
       return res.json(conversation.messages);
     } else {
-      return res.json({ message: "No messages found" });
+      return res.json(["No messages found"]);
     }
   } catch (error) {
     console.log(error);

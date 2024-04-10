@@ -8,17 +8,31 @@ import { setData } from "../redux/Slices/dataSlice.js";
 import GetUsers from "../hooks/getUsers.js";
 import toast from "react-hot-toast";
 import { setUsers } from "../redux/Slices/Conversations.js";
+import { setMessages } from "../redux/Slices/messageSlice.js";
+import getMessages from "../hooks/getMessages.js";
+import useGetRealTimeMessage from "../hooks/useGetRealTimeMessages.jsx";
 
 const Home = () => {
   const [search, setSearch] = useState("");
   const user = useSelector((state) => state.user.value);
+  const data = useSelector((state) => state.data.value);
   const [conversations, setConversations] = useState([]);
   const dispatch = useDispatch();
   const { fetchUsers } = GetUsers(setConversations);
+  const { messages } = useSelector((store) => store.message);
+
+  const [message, setMessage] = useState("");
+
   useEffect(() => {
     fetchUsers();
   }, []);
-  console.log(conversations);
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      onSubmitHandler(e);
+    }
+  };
+
   const handleLogout = async (e) => {
     e.preventDefault();
     try {
@@ -29,11 +43,15 @@ const Home = () => {
       if (res) {
         localStorage.clear();
         dispatch(setData(null));
+        dispatch(setUsers(null));
       }
     } catch (error) {
       console.error(error);
     }
   };
+
+  getMessages();
+  useGetRealTimeMessage();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -54,9 +72,29 @@ const Home = () => {
     }
   };
 
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const result = await fetch(`/api/messages/send/${user?._id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message,
+        }),
+      });
+      const res = await result.json();
+      dispatch(setMessages([...messages, res?.newMessage]));
+    } catch (error) {
+      console.log(error);
+    }
+    setMessage("");
+  };
+
   return (
     <div className="flex justify-center w-full h-full pt-10 relative">
-      <div className="left flex flex-col gap-5 border-r-2 p-5 border-white overflow-y-auto">
+      <div className="left flex flex-col gap-5 border-r-2 sm:p-5 p-1 border-white overflow-y-auto sm:w-auto w-1/3 sm:overflow-y-scroll">
         <div className="flex gap-3">
           <input
             value={search}
@@ -75,7 +113,7 @@ const Home = () => {
         </div>
         <div className="flex flex-col gap-5">
           <Users users={conversations} />
-          <div className="absolute bottom-0 bg-black py-5">
+          <div className="absolute bottom-0 bg-[#09090B] py-5">
             <button
               type="submit"
               onClick={(e) => handleLogout(e)}
@@ -86,21 +124,53 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <div className="right w-1/2 ">
-        <div className="userheader border-b-2 border-white p-3 sticky">
-          <h1 className="font-bold font-lg ">To:{user?.fullName}</h1>
-        </div>
-        <div className=" p-5 overflow-y-auto h-\[78vh\]">
-          <Messages />
-        </div>
-        <div className="flex p-5 w-1/2 absolute bottom-0">
-          <input
-            type="text"
-            className="flex h-9 w-4/5 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-            placeholder="Type your message"
-          />
-          <button className="bg-white text-black w-20">Send</button>
-        </div>
+
+      <div className="right sm:w-1/2 w-2/3">
+        {user ? (
+          <div>
+            <div className="userheader border-b-2 border-white p-3 sticky">
+              <h1 className="font-bold ">
+                <span className="opacity-80">To: </span>{" "}
+                <span className="text-lg">{user?.fullName}</span>
+              </h1>
+            </div>
+            <div className=" p-5 overflow-y-auto h-[78vh] ">
+              {Array.isArray(messages) && messages?.length > 0
+                ? messages?.map((item, index) => {
+                    return (
+                      <div key={index} className="">
+                        <Messages
+                          messages={item?.message}
+                          messageSenderId={item?.senderId}
+                        />
+                      </div>
+                    );
+                  })
+                : null}
+            </div>
+            <div className="flex p-5 sm:w-1/2 w-2/3 absolute bottom-0">
+              <input
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                type="text"
+                className="flex h-9 w-4/5 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                placeholder="Type your message"
+                onKeyUp={(e) => handleKeyPress(e)}
+              />
+              <button
+                type="submit"
+                onClick={(e) => onSubmitHandler(e)}
+                className="bg-white text-black w-20"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex justify-center items-center w-full h-full font-bold text-wrap">
+            {`Hi ${data?.newUser?.fullName} , Select a User to chat`}
+          </div>
+        )}
       </div>
     </div>
   );

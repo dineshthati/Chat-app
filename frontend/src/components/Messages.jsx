@@ -1,29 +1,53 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
-import getMessages from "../hooks/getMessages";
+import getMessages from "../hooks/getMessages.js";
 import useGetRealTimeMessage from "../hooks/useGetRealTimeMessages";
-const Messages = () => {
+
+import notificationSound from "../assets/frontend_src_assets_sounds_notification.mp3";
+
+const Messages = ({ messages, messageSenderId }) => {
   const user = useSelector((state) => state.user.value);
-  // const { messages, fetchMessages } = getMessages(user);
-  const { messages } = useSelector((store) => store.message);
-  useGetRealTimeMessage();
-  console.log(messages);
-  // useEffect(() => {
-  //   if (user) {
-  //     fetchMessages(user._id);
-  //   }
-  // }, [user, fetchMessages]);
+
+  const data = useSelector((state) => state.data.value);
+  const isSender = data?.newUser?.id === messageSenderId;
+
+  const scroll = useRef();
+
+  useEffect(() => {
+    scroll.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  useEffect(() => {
+    if (!isSender) {
+      const audio = new Audio(notificationSound);
+      audio.play();
+    }
+  }, [messages]);
+
   return (
     <div>
-      {Array.isArray(messages) && messages.length > 0 ? (
-        messages.map((item, index) => (
-          <div className=" text-white flex gap-5 mt-3" key={`message-${index}`}>
-            <img className="w-8 h-8 rounded-full" src="" alt="" />
-            <span className="bg-zinc-800 p-2 rounded-xl">{item.message}</span>
+      {messages && messages.length > 1 ? (
+        <div
+          ref={scroll}
+          className={`chat ${isSender ? "chat-end" : "chat-start"} `}
+        >
+          <div className="chat-image avatar">
+            <div className="w-10 rounded-full">
+              <img
+                alt="Tailwind CSS chat bubble component"
+                src={
+                  isSender
+                    ? data?.newUser?.profilePhotoUrl
+                    : user?.profilePhotoUrl
+                }
+              />
+            </div>
           </div>
-        ))
+
+          <div className="chat-bubble">{messages}</div>
+        </div>
       ) : (
-        <div>No messages found.</div>
+        <div>No messages found...</div>
       )}
     </div>
   );
